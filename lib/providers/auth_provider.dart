@@ -12,12 +12,14 @@ class AuthProvider extends ChangeNotifier {
   UserModel? _currentUser;
   bool _isLoading = false;
   String? _error;
+  bool _isAuthInitialized = false;
 
   // Getters
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isLoggedIn => _currentUser != null;
+  bool get isAuthInitialized => _isAuthInitialized;
 
   /// Initialize auth state listener
   AuthProvider() {
@@ -37,6 +39,7 @@ class AuthProvider extends ChangeNotifier {
       } else {
         _currentUser = null;
       }
+      _isAuthInitialized = true;
       notifyListeners();
     });
   }

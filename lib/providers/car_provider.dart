@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/firestore_service.dart';
 import '../models/car_model.dart';
 
 /// Car Provider for managing cars list and car details
 class CarProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<CarModel> _allCars = [];
   List<CarModel> _filteredCars = [];
@@ -209,6 +211,107 @@ class CarProvider extends ChangeNotifier {
 
       await _firestoreService.deleteCar(carId);
       await fetchAllCars(); // Refresh list
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Set error message
+  void setError(String error) {
+    _isLoading = false;
+    _error = error;
+    notifyListeners();
+  }
+
+  /// Add test cars to Firestore (admin feature for quick setup)
+  Future<bool> addTestCars() async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final testCars = [
+        {
+          'id': 'car_002',
+          'name': 'Toyota Fortuner',
+          'model': 'Fortuner',
+          'year': 2023,
+          'category': 'SUV',
+          'pricePerDay': 4500.0,
+          'rating': 4.8,
+          'reviewCount': 45,
+          'seats': 7,
+          'transmission': 'Automatic',
+          'fuelType': 'Diesel',
+          'airConditioning': true,
+          'description': 'Spacious SUV perfect for family trips',
+          'imageUrls': [],
+          'available': true,
+        },
+        {
+          'id': 'car_003',
+          'name': 'Hyundai Creta',
+          'model': 'Creta',
+          'year': 2024,
+          'category': 'SUV',
+          'pricePerDay': 3800.0,
+          'rating': 4.6,
+          'reviewCount': 32,
+          'seats': 5,
+          'transmission': 'Automatic',
+          'fuelType': 'Petrol',
+          'airConditioning': true,
+          'description': 'Modern compact SUV with comfort',
+          'imageUrls': [],
+          'available': true,
+        },
+        {
+          'id': 'car_004',
+          'name': 'Honda City',
+          'model': 'City',
+          'year': 2023,
+          'category': 'Sedan',
+          'pricePerDay': 2500.0,
+          'rating': 4.4,
+          'reviewCount': 28,
+          'seats': 5,
+          'transmission': 'Manual',
+          'fuelType': 'Petrol',
+          'airConditioning': true,
+          'description': 'Affordable and reliable sedan',
+          'imageUrls': [],
+          'available': true,
+        },
+        {
+          'id': 'car_005',
+          'name': 'BMW X5',
+          'model': 'X5',
+          'year': 2024,
+          'category': 'Luxury',
+          'pricePerDay': 8500.0,
+          'rating': 4.9,
+          'reviewCount': 18,
+          'seats': 5,
+          'transmission': 'Automatic',
+          'fuelType': 'Petrol',
+          'airConditioning': true,
+          'description': 'Premium luxury SUV with all features',
+          'imageUrls': [],
+          'available': true,
+        },
+      ];
+
+      for (var car in testCars) {
+        await _firestore.collection('cars').doc(car['id'] as String).set(car);
+      }
+
+      await fetchAllCars(); // Refresh the car list
       _isLoading = false;
       notifyListeners();
       return true;

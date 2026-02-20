@@ -54,11 +54,8 @@ class BookingProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final allBookings = <BookingModel>[];
-      final booksSnapshot = await _firestoreService
-          .getCarBookings(''); // This is a workaround, typically you'd fetch all
-
-      _allBookings = allBookings;
+      _allBookings = [];
+      // TODO: Implement fetching all bookings from Firestore
       _isLoading = false;
       notifyListeners();
     } catch (e) {

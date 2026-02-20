@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "869636106856",
+    "project_id": "carrental-f4d21",
+    "storage_bucket": "carrental-f4d21.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:869636106856:android:68f35072d02cd73468e9dd",
+        "android_client_info": {
+          "package_name": "com.example.carrental"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCugkfthvNmrzl8PUh-rvABu2OaSbz75-I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

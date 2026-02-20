@@ -26,9 +26,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch cars when screen loads
+    // Fetch cars when screen loads with timeout
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<CarProvider>(context, listen: false).fetchAllCars();
+      final carProvider = Provider.of<CarProvider>(context, listen: false);
+      carProvider.fetchAllCars().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          carProvider.setError('Failed to load cars. Please try again.');
+        },
+      );
     });
   }
 
@@ -50,6 +56,25 @@ class _HomeScreenState extends State<HomeScreen> {
           style: AppTextStyles.titleLarge.copyWith(color: AppColors.white),
         ),
         actions: [
+          // Admin: Add test cars button
+          IconButton(
+            icon: const Icon(Icons.add_circle, color: AppColors.white),
+            tooltip: 'Add Test Cars',
+            onPressed: () async {
+              final carProvider = Provider.of<CarProvider>(context, listen: false);
+              final success = await carProvider.addTestCars();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      success ? '✓ Test cars added!' : 'Failed to add test cars',
+                    ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.person, color: AppColors.white),
             onPressed: () => Navigator.pushNamed(context, '/profile'),

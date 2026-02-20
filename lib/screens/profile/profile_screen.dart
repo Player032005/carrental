@@ -8,7 +8,6 @@ import '../../providers/booking_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../utils/date_formatter.dart';
 import '../../widgets/common/custom_button.dart';
-import '../../widgets/common/loading_widget.dart';
 
 /// Profile screen showing user information and booking history
 class ProfileScreen extends StatefulWidget {
@@ -46,6 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: Consumer3<AuthProvider, UserProvider, BookingProvider>(
         builder: (context, authProvider, userProvider, bookingProvider, _) {
+          final bookings = bookingProvider;
           final user = authProvider.currentUser;
 
           if (user == null) {
@@ -153,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       AppStrings.bookingHistory,
                       style: AppTextStyles.titleMedium,
                     ),
-                    if (bookingProvider.userBookings.isNotEmpty)
+                    if (bookings.userBookings.isNotEmpty)
                       TextButton(
                         onPressed: () {
                           // Show all bookings dialog
@@ -170,30 +170,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 12),
 
                 // Upcoming bookings
-                if (bookingProvider.upcomingBookings.isNotEmpty) ...[
+                if (bookings.upcomingBookings.isNotEmpty) ...[
                   Text(
                     AppStrings.upcomingBookings,
                     style: AppTextStyles.labelMedium,
                   ),
                   const SizedBox(height: 8),
-                  ...bookingProvider.upcomingBookings
+                  ...bookings.upcomingBookings
                       .take(3)
                       .map((booking) => _buildBookingCard(booking)),
                   const SizedBox(height: 16),
                 ],
 
                 // Past bookings
-                if (bookingProvider.completedBookings.isNotEmpty) ...[
+                if (bookings.completedBookings.isNotEmpty) ...[
                   Text(
                     AppStrings.pastBookings,
                     style: AppTextStyles.labelMedium,
                   ),
                   const SizedBox(height: 8),
-                  ...bookingProvider.completedBookings
+                  ...bookings.completedBookings
                       .take(2)
                       .map((booking) => _buildBookingCard(booking)),
                   const SizedBox(height: 16),
-                ] else if (bookingProvider.userBookings.isEmpty) ...[
+                ] else if (bookings.userBookings.isEmpty) ...[
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),

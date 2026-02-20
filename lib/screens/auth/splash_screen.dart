@@ -27,10 +27,23 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToHome() async {
-    await Future.delayed(const Duration(milliseconds: 3000));
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    
+    // Wait for auth state to be initialized (with max timeout of 3 seconds)
+    int attempts = 0;
+    const maxAttempts = 30; // 3 seconds with 100ms checks
+    
+    while (!authProvider.isAuthInitialized && attempts < maxAttempts) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      attempts++;
+    }
+    
+    // Add small delay for animation
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (!mounted) return;
 
     // Check authentication status
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isLoggedIn = authProvider.isLoggedIn;
 
     // Navigate to appropriate screen
