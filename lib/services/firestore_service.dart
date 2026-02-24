@@ -11,6 +11,19 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final Logger _logger = Logger();
 
+  CarModel _carFromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data() ?? <String, dynamic>{};
+    final currentId = (data['id'] as String?)?.trim() ?? '';
+    if (currentId.isNotEmpty) {
+      return CarModel.fromJson(data);
+    }
+
+    return CarModel.fromJson({
+      ...data,
+      'id': doc.id,
+    });
+  }
+
   // Collection references
   static const String usersCollection = 'users';
   static const String carsCollection = 'cars';
@@ -105,7 +118,7 @@ class FirestoreService {
       _logger.i('Fetching all cars');
       final querySnapshot = await _firestore.collection(carsCollection).get();
       final cars = querySnapshot.docs
-          .map((doc) => CarModel.fromJson(doc.data()))
+          .map((doc) => _carFromDoc(doc))
           .toList();
       _logger.i('Fetched ${cars.length} cars');
       return cars;
@@ -118,11 +131,26 @@ class FirestoreService {
   /// Get car by ID
   Future<CarModel?> getCarById(String carId) async {
     try {
+      if (carId.trim().isEmpty) {
+        throw ArgumentError('Car ID cannot be empty');
+      }
+
       _logger.i('Fetching car: $carId');
       final doc = await _firestore.collection(carsCollection).doc(carId).get();
       if (doc.exists) {
-        return CarModel.fromJson(doc.data() ?? {});
+        return _carFromDoc(doc);
       }
+
+      final querySnapshot = await _firestore
+          .collection(carsCollection)
+          .where('id', isEqualTo: carId)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return _carFromDoc(querySnapshot.docs.first);
+      }
+
       return null;
     } catch (e) {
       _logger.e('Error fetching car: $e');
@@ -139,7 +167,7 @@ class FirestoreService {
           .where('category', isEqualTo: category)
           .get();
       final cars = querySnapshot.docs
-          .map((doc) => CarModel.fromJson(doc.data()))
+          .map((doc) => _carFromDoc(doc))
           .toList();
       return cars;
     } catch (e) {

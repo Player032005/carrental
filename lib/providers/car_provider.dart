@@ -50,6 +50,13 @@ class CarProvider extends ChangeNotifier {
   /// Get car by ID
   Future<CarModel?> getCarById(String carId) async {
     try {
+      if (carId.trim().isEmpty) {
+        _error = 'Invalid car ID';
+        _selectedCar = null;
+        notifyListeners();
+        return null;
+      }
+
       _isLoading = true;
       _error = null;
       notifyListeners();
