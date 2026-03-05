@@ -123,12 +123,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   maxPrice: carProvider.maxPrice,
                                   minPriceRange: priceRange['min'] ?? 0,
                                   maxPriceRange: priceRange['max'] ?? 1000,
-                                  onCategoryChanged: () => setState(() {}),
+                                  onCategoryChanged: (category) {
+                                    carProvider.filterByCategory(category);
+                                    filterProvider.setCategory(category);
+                                  },
                                   onPriceChanged: (min, max) {
                                     carProvider.filterByPrice(min, max);
+                                    filterProvider.setPriceRange(min, max);
                                   },
                                   onReset: () {
                                     carProvider.clearFilters();
+                                    filterProvider.clearFilters();
                                   },
                                 );
                               },

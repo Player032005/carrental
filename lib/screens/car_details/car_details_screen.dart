@@ -100,19 +100,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                               },
                             ),
                             items: car.imageUrls.map((imageUrl) {
-                              return CachedNetworkImage(
-                                imageUrl: imageUrl,
-                                fit: BoxFit.cover,
-                                errorWidget: (context, url, error) =>
-                                    Container(
-                                  color: AppColors.lightGrey,
-                                  child: Icon(
-                                    Icons.directions_car,
-                                    size: 100,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              );
+                              return _buildCarImage(imageUrl);
                             }).toList(),
                           )
                         else
@@ -216,7 +204,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             text: TextSpan(
                               children: [
                                 TextSpan(
-                                  text: '\$${car.pricePerDay.toStringAsFixed(2)}',
+                                  text: '₹${car.pricePerDay.toStringAsFixed(2)}',
                                   style: AppTextStyles.headlineLarge
                                       .copyWith(
                                     color: AppColors.primary,
@@ -230,6 +218,48 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
+
+                          // Details grid
+                          Text(
+                            AppStrings.carDetails,
+                            style: AppTextStyles.titleMedium,
+                          ),
+                          const SizedBox(height: 12),
+                          GridView.count(
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            childAspectRatio: 2.7,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            children: [
+                              _buildDetailTile(
+                                label: AppStrings.carYear,
+                                value: car.year.toString(),
+                              ),
+                              _buildDetailTile(
+                                label: AppStrings.category,
+                                value: car.category,
+                              ),
+                              _buildDetailTile(
+                                label: AppStrings.seats,
+                                value: car.seats.toString(),
+                              ),
+                              _buildDetailTile(
+                                label: AppStrings.transmission,
+                                value: car.transmission,
+                              ),
+                              _buildDetailTile(
+                                label: AppStrings.fuelType,
+                                value: car.fuelType,
+                              ),
+                              _buildDetailTile(
+                                label: AppStrings.airConditioning,
+                                value: car.airConditioning ? AppStrings.available : AppStrings.unavailable,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
 
                           // Description
                           Text(
@@ -357,6 +387,89 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.primary,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCarImage(String imagePath) {
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return CachedNetworkImage(
+        imageUrl: imagePath,
+        fit: BoxFit.cover,
+        errorWidget: (context, url, error) => _buildImagePlaceholder(),
+      );
+    }
+
+    final candidates = <String>{
+      imagePath,
+      imagePath.replaceFirst('assets/', ''),
+      imagePath.startsWith('assets/') ? imagePath : 'assets/$imagePath',
+    }.toList();
+
+    return _buildAssetCandidate(candidates, 0);
+  }
+
+  Widget _buildAssetCandidate(List<String> candidates, int index) {
+    if (index >= candidates.length) {
+      return _buildImagePlaceholder();
+    }
+
+    return Image.asset(
+      candidates[index],
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      isAntiAlias: true,
+      gaplessPlayback: true,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildAssetCandidate(candidates, index + 1);
+      },
+    );
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      color: AppColors.lightGrey,
+      child: Icon(
+        Icons.directions_car,
+        size: 100,
+        color: AppColors.textSecondary,
+      ),
+    );
+  }
+
+  Widget _buildDetailTile({
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

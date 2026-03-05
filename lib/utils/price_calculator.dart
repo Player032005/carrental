@@ -34,20 +34,20 @@ class PriceCalculator {
 
   /// Format price as currency string
   /// [price] - Price amount
-  /// Returns formatted price (e.g., "$1,234.56")
+  /// Returns formatted price (e.g., "₹1,234.56")
   static String formatPrice(double price) {
-    return '\$${price.toStringAsFixed(2)}';
+    return '₹${price.toStringAsFixed(2)}';
   }
 
   /// Format price with currency and abbreviation
-  /// Used for quick display (e.g., "$1.2k")
+  /// Used for quick display (e.g., "₹1.2k")
   static String formatPriceCompact(double price) {
     if (price >= 1000000) {
-      return '\$${(price / 1000000).toStringAsFixed(1)}M';
+      return '₹${(price / 1000000).toStringAsFixed(1)}M';
     } else if (price >= 1000) {
-      return '\$${(price / 1000).toStringAsFixed(1)}k';
+      return '₹${(price / 1000).toStringAsFixed(1)}k';
     } else {
-      return '\$${price.toStringAsFixed(2)}';
+      return '₹${price.toStringAsFixed(2)}';
     }
   }
 

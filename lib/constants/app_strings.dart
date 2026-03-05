@@ -127,16 +127,27 @@ class AppStrings {
   static const String close = 'Close';
   static const String back = 'Back';
   static const String home = 'Home';
+  static const String search = 'Search';
+  static const String bookings = 'Bookings';
   static const String settings = 'Settings';
   static const String about = 'About';
   static const String help = 'Help';
+  static const String support = 'Support';
   static const String contactUs = 'Contact Us';
   static const String privacyPolicy = 'Privacy Policy';
   static const String termsOfService = 'Terms of Service';
+  static const String supportMessage = 'Support is available at support@carrental.com';
+  static const String searchTabHint = 'Use the Home tab to browse and search available cars.';
+  static const String bookingsTabHint = 'Your booking history and upcoming reservations will appear here.';
+  static const String homeOverviewTitle = 'Ready for your next ride?';
+  static const String homeOverviewSubtitle = 'Use Search to discover available cars and Bookings to manage reservations.';
+  static const String exploreCars = 'Explore Cars';
+  static const String viewBookings = 'View Bookings';
 
   // Category strings
   static const String sedan = 'Sedan';
   static const String suv = 'SUV';
+  static const String compactSuv = 'Compact SUV';
   static const String luxury = 'Luxury';
   static const String economic = 'Economic';
   static const String family = 'Family';

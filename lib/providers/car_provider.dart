@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../constants/app_strings.dart';
 import '../services/firestore_service.dart';
 import '../models/car_model.dart';
 
@@ -36,7 +37,15 @@ class CarProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      _allCars = await _firestoreService.getAllCars();
+      final firestoreCars = await _firestoreService.getAllCars();
+      _allCars = List<CarModel>.from(firestoreCars);
+
+      for (final dummyCar in _dummySuvCars) {
+        if (!_allCars.any((car) => car.id == dummyCar.id)) {
+          _allCars.add(dummyCar);
+        }
+      }
+
       _filteredCars = _allCars;
       _isLoading = false;
       notifyListeners();
@@ -61,7 +70,13 @@ class CarProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      _selectedCar = await _firestoreService.getCarById(carId);
+      final localCar = _allCars.where((car) => car.id == carId).toList();
+      if (localCar.isNotEmpty) {
+        _selectedCar = localCar.first;
+      } else {
+        _selectedCar = await _firestoreService.getCarById(carId);
+      }
+
       _isLoading = false;
       notifyListeners();
       return _selectedCar;
@@ -145,7 +160,14 @@ class CarProvider extends ChangeNotifier {
 
   /// Get unique categories
   List<String> getCategories() {
-    final categories = <String>{};
+    final categories = <String>{
+      AppStrings.sedan,
+      AppStrings.suv,
+      AppStrings.compactSuv,
+      AppStrings.luxury,
+      AppStrings.economic,
+      AppStrings.family,
+    };
     for (var car in _allCars) {
       categories.add(car.category);
     }
@@ -329,4 +351,75 @@ class CarProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  List<CarModel> get _dummySuvCars => [
+        CarModel(
+          id: 'dummy_suv_1',
+          name: 'Mahindra Thar',
+          model: 'LX Hard Top',
+          year: 2024,
+          category: AppStrings.suv,
+          pricePerDay: 5200,
+          rating: 4.7,
+          reviewCount: 24,
+          seats: 4,
+          transmission: 'Manual',
+          fuelType: 'Diesel',
+          airConditioning: true,
+          description: 'Adventure-ready SUV with bold styling and strong off-road capability.',
+          imageUrls: const ['assets/suv/thar.jpg'],
+          isAvailable: true,
+        ),
+        CarModel(
+          id: 'dummy_suv_2',
+          name: 'Kia Seltos',
+          model: 'HTX',
+          year: 2024,
+          category: AppStrings.suv,
+          pricePerDay: 4300,
+          rating: 4.6,
+          reviewCount: 31,
+          seats: 5,
+          transmission: 'Automatic',
+          fuelType: 'Petrol',
+          airConditioning: true,
+          description: 'Feature-rich SUV offering comfort, technology, and excellent city drivability.',
+          imageUrls: const ['assets/suv/seltos.jpg'],
+          isAvailable: true,
+        ),
+        CarModel(
+          id: 'dummy_suv_3',
+          name: 'Toyota Fortuner',
+          model: 'Legender',
+          year: 2023,
+          category: AppStrings.suv,
+          pricePerDay: 6800,
+          rating: 4.8,
+          reviewCount: 42,
+          seats: 7,
+          transmission: 'Automatic',
+          fuelType: 'Diesel',
+          airConditioning: true,
+          description: 'Premium full-size SUV with powerful performance for family and highway travel.',
+          imageUrls: const ['assets/suv/fortuner.jpg'],
+          isAvailable: true,
+        ),
+        CarModel(
+          id: 'dummy_suv_4',
+          name: 'Hyundai Creta',
+          model: 'SX(O)',
+          year: 2024,
+          category: AppStrings.suv,
+          pricePerDay: 4100,
+          rating: 4.5,
+          reviewCount: 37,
+          seats: 5,
+          transmission: 'Automatic',
+          fuelType: 'Petrol',
+          airConditioning: true,
+          description: 'Comfortable urban SUV with modern design and practical features.',
+          imageUrls: const ['assets/suv/creta.jpg'],
+          isAvailable: true,
+        ),
+      ];
 }

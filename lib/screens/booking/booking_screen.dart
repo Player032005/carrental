@@ -88,7 +88,7 @@ class _BookingScreenState extends State<BookingScreen> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '\$${widget.car.pricePerDay.toStringAsFixed(2)}/day',
+                          '₹${widget.car.pricePerDay.toStringAsFixed(2)}/day',
                           style: AppTextStyles.titleSmall.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
@@ -282,12 +282,12 @@ class _BookingScreenState extends State<BookingScreen> {
           _buildSummaryRow(
             label: AppStrings.pricePerDayLabel,
             value:
-                '\$${widget.car.pricePerDay.toStringAsFixed(2)}',
+                '₹${widget.car.pricePerDay.toStringAsFixed(2)}',
           ),
           const Divider(height: 16),
           _buildSummaryRow(
             label: AppStrings.totalPrice,
-            value: '\$${totalPrice.toStringAsFixed(2)}',
+            value: '₹${totalPrice.toStringAsFixed(2)}',
             isBold: true,
           ),
         ],

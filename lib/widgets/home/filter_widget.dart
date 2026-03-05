@@ -10,7 +10,7 @@ class FilterWidget extends StatefulWidget {
   final double maxPrice;
   final double minPriceRange;
   final double maxPriceRange;
-  final VoidCallback? onCategoryChanged;
+  final Function(String?)? onCategoryChanged;
   final Function(double, double)? onPriceChanged;
   final VoidCallback? onReset;
 
@@ -33,11 +33,44 @@ class FilterWidget extends StatefulWidget {
 
 class _FilterWidgetState extends State<FilterWidget> {
   late RangeValues _priceRange;
+  late double _effectiveMin;
+  late double _effectiveMax;
 
   @override
   void initState() {
     super.initState();
-    _priceRange = RangeValues(widget.minPrice, widget.maxPrice);
+    _syncPriceRange();
+  }
+
+  @override
+  void didUpdateWidget(covariant FilterWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.minPrice != widget.minPrice ||
+        oldWidget.maxPrice != widget.maxPrice ||
+        oldWidget.minPriceRange != widget.minPriceRange ||
+        oldWidget.maxPriceRange != widget.maxPriceRange) {
+      _syncPriceRange();
+    }
+  }
+
+  void _syncPriceRange() {
+    _effectiveMin = widget.minPriceRange;
+    _effectiveMax = widget.maxPriceRange;
+
+    if (_effectiveMax < _effectiveMin) {
+      final temp = _effectiveMin;
+      _effectiveMin = _effectiveMax;
+      _effectiveMax = temp;
+    }
+
+    if (_effectiveMax == _effectiveMin) {
+      _effectiveMax = _effectiveMin + 1;
+    }
+
+    final start = widget.minPrice.clamp(_effectiveMin, _effectiveMax);
+    final end = widget.maxPrice.clamp(start, _effectiveMax);
+    _priceRange = RangeValues(start, end);
   }
 
   @override
@@ -86,7 +119,7 @@ class _FilterWidgetState extends State<FilterWidget> {
                   label: const Text('All'),
                   selected: widget.selectedCategory == null,
                   onSelected: (_) {
-                    widget.onCategoryChanged?.call();
+                    widget.onCategoryChanged?.call(null);
                     Navigator.pop(context);
                   },
                 ),
@@ -96,7 +129,7 @@ class _FilterWidgetState extends State<FilterWidget> {
                     label: Text(category),
                     selected: widget.selectedCategory == category,
                     onSelected: (_) {
-                      widget.onCategoryChanged?.call();
+                      widget.onCategoryChanged?.call(category);
                       Navigator.pop(context);
                     },
                   );
@@ -113,8 +146,8 @@ class _FilterWidgetState extends State<FilterWidget> {
             const SizedBox(height: 12),
             RangeSlider(
               values: _priceRange,
-              min: widget.minPriceRange,
-              max: widget.maxPriceRange,
+              min: _effectiveMin,
+              max: _effectiveMax,
               onChanged: (RangeValues values) {
                 setState(() {
                   _priceRange = values;
@@ -128,11 +161,11 @@ class _FilterWidgetState extends State<FilterWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '\$${_priceRange.start.toStringAsFixed(0)}',
+                  '₹${_priceRange.start.toStringAsFixed(0)}',
                   style: AppTextStyles.bodyMedium,
                 ),
                 Text(
-                  '\$${_priceRange.end.toStringAsFixed(0)}',
+                  '₹${_priceRange.end.toStringAsFixed(0)}',
                   style: AppTextStyles.bodyMedium,
                 ),
               ],
@@ -176,7 +209,7 @@ Future<void> showFilterBottomSheet(
   required double maxPrice,
   required double minPriceRange,
   required double maxPriceRange,
-  VoidCallback? onCategoryChanged,
+  Function(String?)? onCategoryChanged,
   Function(double, double)? onPriceChanged,
   VoidCallback? onReset,
 }) {

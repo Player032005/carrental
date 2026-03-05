@@ -36,7 +36,7 @@ class _AddCarScreenState extends State<AddCarScreen> {
   String _selectedFuelType = 'Petrol';
   bool _hasAC = true;
 
-  final _categories = ['Sedan', 'SUV', 'Luxury', 'Economic', 'Family'];
+  final _categories = ['Sedan', 'SUV', 'Compact SUV', 'Luxury', 'Economic', 'Family'];
   final _transmissions = ['Manual', 'Automatic'];
   final _fuelTypes = ['Petrol', 'Diesel', 'Electric', 'Hybrid'];
 

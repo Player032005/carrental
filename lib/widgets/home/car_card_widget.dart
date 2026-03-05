@@ -50,14 +50,7 @@ class CarCardWidget extends StatelessWidget {
                     color: AppColors.lightGrey,
                   ),
                   child: car.imageUrls.isNotEmpty
-                      ? CachedNetworkImage(
-                          imageUrl: car.imageUrls.first,
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) =>
-                              _buildPlaceholder(),
-                          placeholder: (context, url) =>
-                              _buildPlaceholder(),
-                        )
+                      ? _buildCarImage(car.imageUrls.first)
                       : _buildPlaceholder(),
                 ),
                 // Availability badge
@@ -171,7 +164,7 @@ class CarCardWidget extends StatelessWidget {
                         starSize: 14,
                       ),
                       Text(
-                        '\$${car.pricePerDay.toStringAsFixed(2)}/day',
+                        '₹${car.pricePerDay.toStringAsFixed(2)}/day',
                         style: AppTextStyles.titleSmall.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w600,
@@ -197,6 +190,42 @@ class CarCardWidget extends StatelessWidget {
         size: 48,
         color: AppColors.textSecondary,
       ),
+    );
+  }
+
+  Widget _buildCarImage(String imagePath) {
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return CachedNetworkImage(
+        imageUrl: imagePath,
+        fit: BoxFit.cover,
+        errorWidget: (context, url, error) => _buildPlaceholder(),
+        placeholder: (context, url) => _buildPlaceholder(),
+      );
+    }
+
+    final candidates = <String>{
+      imagePath,
+      imagePath.replaceFirst('assets/', ''),
+      imagePath.startsWith('assets/') ? imagePath : 'assets/$imagePath',
+    }.toList();
+
+    return _buildAssetCandidate(candidates, 0);
+  }
+
+  Widget _buildAssetCandidate(List<String> candidates, int index) {
+    if (index >= candidates.length) {
+      return _buildPlaceholder();
+    }
+
+    return Image.asset(
+      candidates[index],
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      isAntiAlias: true,
+      gaplessPlayback: true,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildAssetCandidate(candidates, index + 1);
+      },
     );
   }
 }

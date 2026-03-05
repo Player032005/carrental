@@ -11,7 +11,7 @@ import 'providers/filter_provider.dart';
 import 'screens/auth/splash_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
-import 'screens/home/home_screen.dart';
+import 'screens/main_nav_screen.dart';
 import 'screens/profile/profile_screen.dart';
 
 void main() async {
@@ -145,7 +145,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (_) => const LoginScreen(),
           '/register': (_) => const RegisterScreen(),
-          '/home': (_) => const HomeScreen(),
+          '/home': (_) => const MainNavScreen(),
           '/profile': (_) => const ProfileScreen(),
         },
       ),

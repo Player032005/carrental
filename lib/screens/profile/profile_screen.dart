@@ -359,7 +359,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: AppTextStyles.bodySmall,
               ),
               Text(
-                '\$${booking.totalPrice.toStringAsFixed(2)}',
+                '₹${booking.totalPrice.toStringAsFixed(2)}',
                 style: AppTextStyles.titleSmall.copyWith(
                   color: AppColors.primary,
                 ),
